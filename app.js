@@ -1,6 +1,6 @@
 var express = require('express');
-
 var app = express();
+var bodyParser = require('body-parser');
 
 app.listen(3000, () => {
     console.log('express server puerto 3000: \x1b[32m%s\x1b[0m', 'online');
@@ -15,17 +15,24 @@ moongose.connect('mongodb://localhost:27017/hospitalDB')
     })
     .catch(err => console.log(err));
 
-// RUTAS
-app.get('/', (req, res, next) => {
-    return res.status(200).json({
-        ok: 'true',
-        mensaje: 'peticion realziada correctamente'
-    });
-});
+// importar rutas
+var appRoutes = require('./routes/app');
+var usuarioRoutes = require('./routes/usuario');
+var loginRoutes = require('./routes/login');
+
+
+// body parser
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+// middlewares
+app.use('/usuario', usuarioRoutes);
+app.use('/login', loginRoutes);
+app.use('/', appRoutes);
+
 
 
 /************************************************************************/
-
 /*
 moongose.connection.open('mongodb://localhost:27017/hospitalDB', (err, res) => {
     if (err) {
