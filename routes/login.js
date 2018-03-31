@@ -38,7 +38,7 @@ app.post('/', (req, res) => {
 
         // Pleca usa una carita sonriente yo pongo esto.
         usuarioDB.password = undefined;
-        var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 });
+        var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400000 });
 
         return res.status(200).json({
             ok: true,

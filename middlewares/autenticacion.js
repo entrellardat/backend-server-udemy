@@ -7,6 +7,7 @@ var jwt = require('jsonwebtoken');
 
 exports.verficaToken = function(req, res, next) {
     var token = req.query.token;
+    //var token = req.body.token;
     jwt.verify(token, SEED, (err, decoded) => {
         if (err) {
             return res.status(401).json({
