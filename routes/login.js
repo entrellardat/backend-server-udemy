@@ -24,8 +24,10 @@ app.post('/google', (req, res) => {
         audience: CLIENT_ID
     });
 
+
     payload.then(data => {
-        Usuario.findOne({ email: data.email }, (err, usuario) => {
+        console.log('token', data);
+        Usuario.findOne({ email: data.payload.email }, (err, usuario) => {
             if (err) {
                 return res.status(500).json({
                     ok: 'false',
@@ -59,9 +61,11 @@ app.post('/google', (req, res) => {
                 usuario.nombre = data.payload.name;
                 usuario.email = data.payload.email;
                 usuario.role = 'ADMIN';
-                usuario.password = ':)';
+                usuario.password = '::(';
                 usuario.img = data.payload.picture;
                 usuario.google = true;
+
+                console.log(usuario);
 
                 usuario.save((err, usuarioDB) => {
                     if (err) {
@@ -75,7 +79,7 @@ app.post('/google', (req, res) => {
                     var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400000 });
                     return res.status(200).json({
                         ok: true,
-                        mensaje: usuarioDB,
+                        usuario: usuarioDB,
                         token: token,
                         id: usuarioDB.id
                     });
@@ -131,9 +135,11 @@ app.post('/', (req, res) => {
         usuarioDB.password = undefined;
         var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400000 });
 
+        console.log('usuarioDB: ' + usuarioDB);
+
         return res.status(200).json({
             ok: true,
-            mensaje: usuarioDB,
+            usuario: usuarioDB,
             token: token,
             id: usuarioDB.id
         });

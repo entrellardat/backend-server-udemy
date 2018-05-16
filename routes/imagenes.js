@@ -7,8 +7,8 @@ app.get('/:tipo/:img', (req, res, next) => {
     var img = req.params.img;
     var tipo = req.params.tipo;
 
-    var path = `./uploads/${ tipo }/${img}.jpg`
-    console.log(path);
+    var path = `./uploads/${ tipo }/${img}`;
+    console.log('PROBANDO: ' + path);
     fs.exists(path, existe => {
         if (!existe) {
             path = './assets/no-img.jpg';

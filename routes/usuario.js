@@ -50,8 +50,6 @@ app.get('/', (req, res, next) => {
             });
 });
 
-
-
 // =====================================================
 // Actualizar Usuario 
 // =====================================================
@@ -80,6 +78,10 @@ app.put('/:id', mdAuthentication.verficaToken, (req, res) => {
         usuario.email = body.email;
         usuario.role = body.role;
 
+        if (body.img) {
+            usuario.img = body.img;
+        }
+
         usuario.save((err, usuarioGuardado) => {
             if (err) {
                 return res.status(500).json({
@@ -106,7 +108,7 @@ app.put('/:id', mdAuthentication.verficaToken, (req, res) => {
 // =====================================================
 // Crear un nuevo usuario 
 // =====================================================
-app.post('/', mdAuthentication.verficaToken, (req, res) => {
+app.post('/', (req, res) => {
     var body = req.body;
     var usuario = new Usuario({
         nombre: body.nombre,
