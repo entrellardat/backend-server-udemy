@@ -68,7 +68,7 @@ app.get('/coleccion/:tabla/:busqueda', (req, res) => {
     }
 
     promesa.then(data => {
-        return res.status(400).json({
+        return res.status(200).json({
             ok: true,
             [tabla]: data
         });

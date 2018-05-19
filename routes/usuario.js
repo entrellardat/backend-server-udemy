@@ -9,14 +9,14 @@ var mdAuthentication = require('../middlewares/autenticacion');
 
 
 // =====================================================
-// Obtener todos los usuarios 
+// Obtener todos los usuarios
 // =====================================================
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Usuario.find({}, 'nombre email img role')
+    Usuario.find({}, 'nombre email img role google')
         .skip(desde)
         .limit(5)
         .exec(
@@ -51,7 +51,7 @@ app.get('/', (req, res, next) => {
 });
 
 // =====================================================
-// Actualizar Usuario 
+// Actualizar Usuario
 // =====================================================
 app.put('/:id', mdAuthentication.verficaToken, (req, res) => {
     var id = req.params.id;
@@ -106,7 +106,7 @@ app.put('/:id', mdAuthentication.verficaToken, (req, res) => {
 });
 
 // =====================================================
-// Crear un nuevo usuario 
+// Crear un nuevo usuario
 // =====================================================
 app.post('/', (req, res) => {
     var body = req.body;
