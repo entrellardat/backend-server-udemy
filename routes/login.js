@@ -52,7 +52,8 @@ app.post('/google', (req, res) => {
                     ok: true,
                     usuario: usuario,
                     token: token,
-                    id: usuario.id
+                    id: usuario.id,
+                    menu: obtenerMenu(usuario.role)
                 });
 
             } else {
@@ -60,12 +61,11 @@ app.post('/google', (req, res) => {
                 var usuario = new Usuario();
                 usuario.nombre = data.payload.name;
                 usuario.email = data.payload.email;
-                usuario.role = 'ADMIN';
+                usuario.role = 'ADMIN_ROLE';
                 usuario.password = '::(';
                 usuario.img = data.payload.picture;
                 usuario.google = true;
 
-                console.log(usuario);
 
                 usuario.save((err, usuarioDB) => {
                     if (err) {
@@ -81,7 +81,8 @@ app.post('/google', (req, res) => {
                         ok: true,
                         usuario: usuarioDB,
                         token: token,
-                        id: usuarioDB.id
+                        id: usuarioDB.id,
+                        menu: obtenerMenu(usuarioDB.role)
                     });
 
                 });
@@ -123,25 +124,28 @@ app.post('/', (req, res) => {
             });
         }
 
-        if (!bcrypt.compare(usuarioDB.password, body.password)) {
+        if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
             return res.status(400).json({
-                ok: 'false',
+                ok: false,
                 mensaje: 'Credenciales incorrectas - password',
                 errors: err
             });
         }
 
+        console.log('pasando la validacion');
+
+
         // Pleca usa una carita sonriente yo pongo esto.
         usuarioDB.password = undefined;
         var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400000 });
 
-        console.log('usuarioDB: ' + usuarioDB);
 
         return res.status(200).json({
             ok: true,
             usuario: usuarioDB,
             token: token,
-            id: usuarioDB.id
+            id: usuarioDB.id,
+            menu: obtenerMenu(usuarioDB.role)
         });
 
 
@@ -150,5 +154,34 @@ app.post('/', (req, res) => {
 
 });
 
+function obtenerMenu(role) {
+    let menu = [{
+            titulo: 'Principal',
+            icono: 'mdi mdi-gauge',
+            submenu: [
+                { titulo: 'Dashboard', url: '/dashboard' },
+                { titulo: 'ProgressBar', url: '/progress' },
+                { titulo: 'Graficas', url: '/graficas1' },
+                { titulo: 'Promesas', url: '/promesas' },
+                { titulo: 'Rxjs', url: '/rxjs' }
+            ]
+        },
+        {
+            titulo: 'Mantenimientos',
+            icono: 'mdi mdi-folder-lock-open',
+            submenu: [
+                /*  { titulo: 'Usuarios', url: '/usuarios' }, */
+                { titulo: 'Hospitales', url: '/hospitales' },
+                { titulo: 'Medicos', url: '/medicos' }
+            ]
+        }
+    ];
+
+    if (role === "ADMIN_ROLE") {
+        menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' }); // el unshuif lo pone al principio
+    }
+
+    return menu;
+}
 
 module.exports = app;

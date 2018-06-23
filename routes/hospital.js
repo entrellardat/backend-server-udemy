@@ -7,6 +7,41 @@ var app = express();
 
 var mdAuthentication = require('../middlewares/autenticacion');
 
+
+
+// =====================================================
+// Obtener hospital por id
+// ======================================================
+
+app.get('/:id', (req, res) => {
+    var id = req.params.id;
+    Hospital.findById(id)
+        .populate('usuario', 'nombre img email')
+        .exec((err, hospital) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al buscar hospital',
+                    errors: err
+                });
+            }
+            if (!hospital) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'El hospital con el id ' + id + 'no existe ',
+                    errors: {
+                        message: 'No existe un hospital con ese ID '
+                    }
+                });
+            }
+            res.status(200).json({
+                ok: true,
+                hospital: hospital
+            });
+        })
+});
+
+
 // =====================================================
 // Obtener todos los hospitales
 // =====================================================
@@ -47,13 +82,14 @@ app.get('/', (req, res) => {
 });
 
 // =====================================================
-// Crear un nuevo hospital 
+// Crear un nuevo hospital
 // =====================================================
 app.post('/', mdAuthentication.verficaToken, (req, res) => {
     var body = req.body; // obtenemos el hospital
     var hospital = new Hospital({
         nombre: body.nombre,
-        usuario: req.usuario._id
+        usuario: req.usuario._id,
+        img: null
     });
 
 
@@ -77,7 +113,7 @@ app.post('/', mdAuthentication.verficaToken, (req, res) => {
 
 
 // =====================================================
-// Borrar hospital 
+// Borrar hospital
 // =====================================================
 app.delete('/:id', mdAuthentication.verficaToken, (req, res) => {
     var id = req.params.id;
@@ -110,45 +146,57 @@ app.delete('/:id', mdAuthentication.verficaToken, (req, res) => {
 // =====================================================
 // Actualizar el hospital
 // =====================================================
-
 app.put('/:id', mdAuthentication.verficaToken, (req, res) => {
+
     var id = req.params.id;
-    var update = req.body;
+    var body = req.body;
 
     Hospital.findById(id, (err, hospital) => {
+
+
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al buscar el hospital',
+                mensaje: 'Error al buscar hospital',
                 errors: err
             });
         }
 
         if (!hospital) {
             return res.status(400).json({
-                ok: 'false',
-                mensaje: 'el hospital con el id ' + id + 'no existe',
-                errors: { message: 'No existe el hospital con ese ID' }
-            });
-        }
-    });
-
-    hopsital.nombre = body.nombre;
-    hospital.usuario = req.usuario._id;
-
-    hospital.save((err, hospitalActualizado) => {
-        if (err) {
-            return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al actualizar el hospital',
-                errors: err
+                mensaje: 'El hospital con el id ' + id + ' no existe',
+                errors: { message: 'No existe un hospital con ese ID' }
             });
         }
 
+
+        hospital.nombre = body.nombre;
+        hospital.usuario = req.usuario._id;
+
+        hospital.save((err, hospitalGuardado) => {
+
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'Error al actualizar hospital',
+                    errors: err
+                });
+            }
+
+            console.log(hospitalGuardado);
+            res.status(200).json({
+                ok: true,
+                hospital: hospitalGuardado
+            });
+
+        });
 
     });
 
 });
+
+
 
 /*
 app.put('/:id', (req, res) => {

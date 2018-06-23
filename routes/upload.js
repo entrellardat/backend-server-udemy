@@ -35,7 +35,7 @@ app.put('/:tipo/:id', (req, res, next) => {
         });
     }
 
-    // Obtener el nombre del archivo 
+    // Obtener el nombre del archivo
     var archivo = req.files.imagen;
     var extension = archivo.name.split('.');
     extension = extension[extension.length - 1];
@@ -154,13 +154,13 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
                 });
             }
 
-            var pathOld = './uploads/hospitals/' + hospital.imagen;
+            var pathOld = './uploads/hospitales/' + hospital.imagen;
             // si existe elimina la imagen anterior
             if (fs.existsSync(pathOld)) {
                 fs.unlink(pathOld);
             }
 
-            hospital.imagen = nombreArchivo;
+            hospital.img = nombreArchivo;
             hospital.save((err, hospitalActualizado) => {
                 if (err) {
                     res.status(500).send({
@@ -172,7 +172,7 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
                 return res.status(200).send({
                     ok: 'true',
                     message: 'imagen de hospital actualizada',
-                    archivo: hospitalActualizado
+                    hospital: hospitalActualizado
                 });
             });
         });

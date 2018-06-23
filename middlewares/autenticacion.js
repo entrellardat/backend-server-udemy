@@ -21,3 +21,45 @@ exports.verficaToken = function(req, res, next) {
         next();
     });
 }
+
+
+// =====================================================
+// Verificar ADMIN
+// =====================================================
+
+exports.verficaADMIN_ROLE = function(req, res, next) {
+
+    var usuario = req.usuario;
+
+    if (usuario.role === "ADMIN_ROLE ") {
+        next();
+        return;
+    } else {
+        return res.status(401).json({
+            ok: 'false',
+            mensaje: 'token incorrecto',
+            errors: err
+        });
+    }
+}
+
+// =====================================================
+// Verificar ADMIN o mismo USUario
+// =====================================================
+
+exports.verficaADMIN_ROLE_o_MismoUsuario = function(req, res, next) {
+
+    var usuario = req.usuario;
+    var id = req.params.id;
+
+    if (usuario.role === "ADMIN_ROLE " || usuario._id === id) {
+        next();
+        return;
+    } else {
+        return res.status(401).json({
+            ok: 'false',
+            mensaje: 'token incorrecto',
+            errors: err
+        });
+    }
+}
